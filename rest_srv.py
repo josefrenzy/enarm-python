@@ -84,20 +84,5 @@ class Auth(Resource):
         pass
 
 
-# @api.route('/auth/')
-# class Auth(Resource):
-#     def post(self, operation):
-#         if (operation == 'sigin'):
-#             pass
-#         elif (operation == 'signup'):
-#             pass
-#         elif (operation == 'verify'):
-#             pass
-#         elif (operation == 'forgotpass'):
-#             pass
-#         elif (operation == 'confirmpass'):
-#             pass
-
-
 if __name__ == '__main__':
-    app.run(debug=True, port=5001, host='0.0.0.0')
+    app.run(debug=True, port=5000, host='0.0.0.0')
