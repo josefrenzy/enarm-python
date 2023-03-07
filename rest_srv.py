@@ -19,6 +19,9 @@ def get_secret_hash(username):
     return d2
 
 
+client = boto3.client('cognito-idp', region_name='us-east-1')
+
+
 @api.route('/hello')
 class HelloWorld(Resource):
     def get(self):
@@ -28,26 +31,25 @@ class HelloWorld(Resource):
 @api.route('/auth/signin')
 class Auth(Resource):
     def post(self):
-        pass
+        parser = reqparse.RequestParser()
+        parser.add_argument('username')
+        parser.add_argument('password')
+        kwargs = parser.parse_args()
+        r = client.initiate_auth(
+            AuthFlow='USER_PASSWORD_AUTH',
+            ClientId='623vnb06drds7h0qquvti7o63i',
+            AuthParameters={
+                "PASSWORD": kwargs['password'],
+                "USERNAME": kwargs['username'],
+                "SECRET_HASH": get_secret_hash(kwargs['username'])
+            }
+        )
+        return r
 
 
 @api.route('/auth/signup')
 class Auth(Resource):
-
-    # def __init__(self):
-    #     """
-    #     :param cognito_idp_client: A Boto3 Amazon Cognito Identity Provider client.
-    #     :param user_pool_id: The ID of an existing Amazon Cognito user pool.
-    #     :param client_id: The ID of a client application registered with the user pool.
-    #     :param client_secret: The client secret, if the client has a secret.
-    #     """
-
-    #     self.user_pool_id = 'us-east-1_Px7zurHIM'  # user_pool_id
-    #     self.client_id = '623vnb06drds7h0qquvti7o63i'  # client_id
-    #     self.client_secret = 'vqclgnm9qri6k3gdmt1328j3drrh63unsq03l3vsirnu0dv01s6'  # client_secret
-
     def post(self):
-        client = boto3.client('cognito-idp', region_name='us-east-1')
         parser = reqparse.RequestParser()
         parser.add_argument('username')
         parser.add_argument('email')
@@ -80,9 +82,20 @@ class Auth(Resource):
 
 @api.route('/auth/verify')
 class Auth(Resource):
-    def post(self, operation):
-        pass
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('username')
+        parser.add_argument('code')
+        kwargs = parser.parse_args()
+        r = client.confirm_sign_up(
+            ClientId='623vnb06drds7h0qquvti7o63i',
+            ConfirmationCode=kwargs['code'],
+            SecretHash=get_secret_hash(kwargs['username']),
+            Username=kwargs['username']
+        )
+
+        return r
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000, host='0.0.0.0')
+    app.run(debug=True, port=5001, host='0.0.0.0')
