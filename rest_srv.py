@@ -72,12 +72,10 @@ class Auth(Resource):
             UserAttributes=[
                 {
                     'Name': 'email', 'Value': args['email']},
-
-
             ]
         )
         print("--------------------", r)
-        return args
+        return r
 
 
 @api.route('/auth/verify')
