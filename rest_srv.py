@@ -47,7 +47,7 @@ class Auth(Resource):
     #     self.client_secret = 'vqclgnm9qri6k3gdmt1328j3drrh63unsq03l3vsirnu0dv01s6'  # client_secret
 
     def post(self):
-        client = boto3.client('cognito-idp')
+        client = boto3.client('cognito-idp', region_name='us-east-1')
         parser = reqparse.RequestParser()
         parser.add_argument('username')
         parser.add_argument('email')
