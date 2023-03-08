@@ -3,30 +3,32 @@ import hmac
 import hashlib
 import base64
 
+from main.src.logger.app_logging import getlogger
+from main.src.config.constants import EnvVar
+
+logger = getlogger(__name__)
+
 
 def get_secret_hash(username):
-    msg = username + '623vnb06drds7h0qquvti7o63i'
-    dig = hmac.new(str('vqclgnm9qri6k3gdmt1328j3drrh63unsq03l3vsirnu0dv01s6').encode('utf-8'),
+    msg = username + EnvVar.CLIENT_ID
+    dig = hmac.new(str(EnvVar.SECRET_HASH).encode('utf-8'),
                    msg=str(msg).encode('utf-8'), digestmod=hashlib.sha256).digest()
     d2 = base64.b64encode(dig).decode()
-    print(d2)
     return d2
 
 
-client = boto3.client('cognito-idp', region_name='us-east-1')
+client = boto3.client('cognito-idp', region_name=EnvVar.REGION_NAME)
 
 
 class CognitoService():
     def __init__(self) -> None:
-        self.APPLICATION_ID = '623vnb06drds7h0qquvti7o63i'
-        self.SERCRET_HAST = 'vqclgnm9qri6k3gdmt1328j3drrh63unsq03l3vsirnu0dv01s6'
-        self.REGION_NAME = 'us-east-1'
+        self.application_id = EnvVar.CLIENT_ID
 
     def signIn(self, **kwargs):
-
+        logger.debug(kwargs)
         return client.initiate_auth(
             AuthFlow='USER_PASSWORD_AUTH',
-            ClientId='623vnb06drds7h0qquvti7o63i',
+            ClientId=str(EnvVar.CLIENT_ID),
             AuthParameters={
                 "PASSWORD": kwargs['password'],
                 "USERNAME": kwargs['username'],
@@ -35,9 +37,9 @@ class CognitoService():
         )
 
     def signUp(self, **kwargs):
-        print(kwargs)
+        logger.debug(kwargs)
         return client.sign_up(
-            ClientId='623vnb06drds7h0qquvti7o63i',
+            ClientId=str(EnvVar.CLIENT_ID),
             SecretHash=get_secret_hash(kwargs['username']),
             Username=kwargs['username'],
             Password=kwargs['password'],
@@ -48,8 +50,9 @@ class CognitoService():
         )
 
     def verify(self, **kwargs):
+        logger.debug(kwargs)
         return client.confirm_sign_up(
-            ClientId='623vnb06drds7h0qquvti7o63i',
+            ClientId=str(EnvVar.CLIENT_ID),
             ConfirmationCode=kwargs['code'],
             SecretHash=get_secret_hash(kwargs['username']),
             Username=kwargs['username']

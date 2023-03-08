@@ -21,5 +21,5 @@ class FlaskConfig:
 class EnvVar:
     load_dotenv()
     REGION_NAME = getenv("REGION_NAME")
-    APPLICATION_ID = getenv("APPLICATION_ID")
+    CLIENT_ID = getenv("CLIENT_ID")
     SECRET_HASH = getenv("SECRET_HASH")
