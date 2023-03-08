@@ -3,6 +3,11 @@ from flask_restx import Resource, Api, reqparse
 from botocore.exceptions import ClientError
 
 from main.src.service import cognito
+from main.src.logger.app_logging import getlogger
+
+from main.src.config.constants import FlaskConfig
+
+logger = getlogger(__name__)
 
 app = Flask(__name__)
 api = Api(app)
@@ -27,6 +32,7 @@ class Auth(Resource):
         except ClientError as e:
             print(e.response['Error']['Code'])
             if (e.response['Error']['Code'] == "NotAuthorizedException"):
+                logger.debug(e.response)
                 return {
                     "errorCode": e.response['Error']['Code'],
                     "statusCode": 403,
@@ -54,6 +60,7 @@ class Auth(Resource):
             return cognito.CognitoService.signUp(self, **kwargs)
         except ClientError as e:
             if (e.response['Error']['Code'] == "UsernameExistsException"):
+                logger.debug(e.response)
                 return {
                     "errorCode": e.response['Error']['Code'],
                     "statusCode": 409,
@@ -71,6 +78,7 @@ class Auth(Resource):
             return cognito.CognitoService.verify(self, **kwargs)
         except ClientError as e:
             if (e.response['Error']['Code'] == "ExpiredCodeException"):
+                logger.debug(e.response)
                 return {
                     "errorCode": e.response['Error']['Code'],
                     "statusCode": 405,
@@ -78,4 +86,4 @@ class Auth(Resource):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001, host='0.0.0.0')
+    app.run(debug=True, port=FlaskConfig.Port, host=FlaskConfig.Host)
