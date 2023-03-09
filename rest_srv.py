@@ -13,6 +13,8 @@ app = Flask(__name__)
 api = Api(app)
 
 
+# TODO implement health and ready endpoints
+
 @api.route('/hello')
 class HelloWorld(Resource):
     def get(self):
