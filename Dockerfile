@@ -4,6 +4,7 @@ ENV SECRET_HASH=vqclgnm9qri6k3gdmt1328j3drrh63unsq03l3vsirnu0dv01s6
 ENV REGION_NAME=us-east-1
 RUN apt-get update
 RUN apt-get install software-properties-common -y
+RUN apt-get -y install default-libmysqlclient-dev
 RUN pip install --upgrade pip
 WORKDIR /app
 COPY . /app

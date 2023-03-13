@@ -14,6 +14,10 @@ Jinja2==3.1.2
 jmespath==1.0.1
 jsonschema==4.17.3
 MarkupSafe==2.1.2
+mysql-connector-python==8.0.32
+numpy==1.24.2
+pandas==1.5.3
+protobuf==3.20.3
 pycodestyle==2.10.0
 pyrsistent==0.19.3
 python-dateutil==2.8.2

@@ -1,0 +1,12 @@
+{
+  "get_payments": [
+    "select ",
+    " payment_id, user_id, payment_method_id, amount, status ",
+    "from enarm_dev.payments"
+  ],
+  "insert_payment": [
+    "INSERT INTO enarm.payments ",
+    "(user_id, payment_method_id, amount, status, `date`) ",
+    "VALUES(0, 0, 0, 0, '');"
+  ]
+}

@@ -1,18 +1,27 @@
-from flask import Flask
+
+import json
+
+from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_restx import Resource, Api, reqparse
 from botocore.exceptions import ClientError
 
-from main.src.service import cognito
+from main.src.service.cognito import CognitoService
 from main.src.logger.app_logging import getlogger
 
 from main.src.config.constants import FlaskConfig
 
+from main.src.config.db_conn import DBUtils
+from main.src.utils.common_utils import return_kwargs
+
+
 logger = getlogger(__name__)
 
 app = Flask(__name__)
+
+# TODO wsgi add
 CORS(app)
-api = Api(app)
+api = Api(app, doc='/api/v1/doc/', prefix='/api/v1')
 
 
 # TODO implement health and ready endpoints
@@ -31,16 +40,15 @@ class Auth(Resource):
             parser.add_argument('username')
             parser.add_argument('password')
             kwargs = parser.parse_args()
-            r = cognito.CognitoService.signIn(self, **kwargs)
+            r = CognitoService.signIn(self, **kwargs)
             return r
         except ClientError as e:
-            print(e.response['Error']['Code'])
-            if (e.response['Error']['Code'] == "NotAuthorizedException"):
+            if (e.response['Error']['Code'] == 'NotAuthorizedException'):
                 logger.debug(e.response)
                 return {
-                    "errorCode": e.response['Error']['Code'],
-                    "statusCode": 403,
-                    "message": "Nombre de usuario o Contraseña no validos"}
+                    'errorCode': e.response['Error']['Code'],
+                    'statusCode': 403,
+                    'message': 'Nombre de usuario o Contraseña no validos'}
 
 
 @api.route('/auth/signup')
@@ -61,14 +69,14 @@ class Auth(Resource):
         parser.add_argument('type_user_id')
         kwargs = parser.parse_args()
         try:
-            return cognito.CognitoService.signUp(self, **kwargs)
+            return CognitoService.signUp(self, **kwargs)
         except ClientError as e:
-            if (e.response['Error']['Code'] == "UsernameExistsException"):
+            if (e.response['Error']['Code'] == 'UsernameExistsException'):
                 logger.debug(e.response)
                 return {
-                    "errorCode": e.response['Error']['Code'],
-                    "statusCode": 409,
-                    "message": "El usuario que intentas registrar ya existe"}
+                    'errorCode': e.response['Error']['Code'],
+                    'statusCode': 409,
+                    'message': 'El usuario que intentas registrar ya existe'}
 
 
 @api.route('/auth/verify')
@@ -79,14 +87,34 @@ class Auth(Resource):
         parser.add_argument('code')
         kwargs = parser.parse_args()
         try:
-            return cognito.CognitoService.verify(self, **kwargs)
+            return CognitoService.verify(self, **kwargs)
         except ClientError as e:
-            if (e.response['Error']['Code'] == "ExpiredCodeException"):
+            if (e.response['Error']['Code'] == 'ExpiredCodeException'):
                 logger.debug(e.response)
                 return {
-                    "errorCode": e.response['Error']['Code'],
-                    "statusCode": 405,
-                    "message": "Codigo de verificacion Vencido"}
+                    'errorCode': e.response['Error']['Code'],
+                    'statusCode': 405,
+                    'message': 'Codigo de verificacion Vencido'}
+
+
+@api.route('/payment')
+class PaymentResource(Resource):
+    du = DBUtils()
+
+    def get(self):
+        try:
+            query = return_kwargs("get_payments")
+            result = self.du.execute_query(query,)
+            print(type(result))
+            print(result)
+            return {"status": "success", "data": result}
+        except TypeError as te:
+            logger.exception(te)
+        except Exception as e:
+            logger.exception(e)
+
+    def post(self):
+        pass
 
 
 if __name__ == '__main__':

@@ -20,7 +20,7 @@ def get_secret_hash(username):
 client = boto3.client('cognito-idp', region_name=EnvVar.REGION_NAME)
 
 
-class CognitoService():
+class CognitoService(object):
     def __init__(self) -> None:
         self.application_id = EnvVar.CLIENT_ID
 
