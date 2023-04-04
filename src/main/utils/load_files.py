@@ -1,5 +1,5 @@
 import json
-from main.src.logger.app_logging import getlogger
+from logger.app_logging import getlogger
 import pandas as pd
 
 logger = getlogger(__name__)

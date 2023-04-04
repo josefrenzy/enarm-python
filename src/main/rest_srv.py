@@ -6,13 +6,13 @@ from flask_cors import CORS
 from flask_restx import Resource, Api, reqparse
 from botocore.exceptions import ClientError
 
-from main.src.service.cognito import CognitoService
-from main.src.logger.app_logging import getlogger
+from service.cognito import CognitoService
+from logger.app_logging import getlogger
 
-from main.src.config.constants import FlaskConfig
+from config.constants import FlaskConfig
 
-from main.src.config.db_conn import DBUtils
-from main.src.utils.common_utils import return_kwargs
+from config.db_conn import DBUtils
+from utils.common_utils import return_kwargs
 
 
 logger = getlogger(__name__)

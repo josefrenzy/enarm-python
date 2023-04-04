@@ -3,7 +3,7 @@ import mysql.connector
 from mysql.connector import errorcode
 from timeit import default_timer as timer
 
-from main.src.logger.app_logging import getlogger
+from logger.app_logging import getlogger
 
 
 class DBUtils():

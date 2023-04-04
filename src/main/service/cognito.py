@@ -3,8 +3,8 @@ import hmac
 import hashlib
 import base64
 
-from main.src.logger.app_logging import getlogger
-from main.src.config.constants import EnvVar
+from logger.app_logging import getlogger
+from config.constants import EnvVar
 
 logger = getlogger(__name__)
 
